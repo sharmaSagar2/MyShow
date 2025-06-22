@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { dummyShowsData, dummyDateTimeData, assets } from '../assets/assets'
 import Loading from '../components/Loading';
-import { ClockIcon } from 'lucide-react';
+import { ArrowRightIcon, ClockIcon } from 'lucide-react';
 import isoTimeFormat  from '../lib/isoTimeFormat';
 import BlurCircle from '../components/BlurCircle';
 import toast from 'react-hot-toast';
@@ -28,10 +29,16 @@ const SeatLayout = () => {
 
 const handleSeatClick = (seatId) => {
   if(!selectedTime) return toast("Please select a time")
-  if (selectedSeats.includes(seatId) && selectedSeats.length > 5) {
+ const isSelected = selectedSeats.includes(seatId);
+
+  // Only block if selecting a new one and limit exceeded
+  if (!isSelected && selectedSeats.length >= 5) {
     return toast("You can only select up to 5 seats");
   }
-  setSelectedSeats(prev=>prev.includes(seatId)?prev.filter(seat=>seat!==seatId):[...prev,seatId])
+  // Toggle seat
+  setSelectedSeats(prev =>
+    isSelected ? prev.filter(seat => seat !== seatId) : [...prev, seatId]
+  );
 }
 const renderSeats = (row,count=9) => (
   <div key={row} className='flex gap-2 mt-2'>
@@ -53,6 +60,7 @@ const renderSeats = (row,count=9) => (
 
   useEffect(() => {
     getShow();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return show ? (
@@ -89,10 +97,7 @@ const renderSeats = (row,count=9) => (
           <div className='grid grid-cols-2 md:grid-cols-1 gap-8 md:gap-2 mb-6'>
             {groupRow[0].map(row=>renderSeats(row))}
           </div>
-
-        </div>
-
-                <div className='grid grid-cols-2 gap-11'>
+                    <div className='grid grid-cols-2 gap-11'>
           
             {groupRow.slice(1).map((group,idx)=>(
               <div key={idx}>
@@ -103,6 +108,15 @@ const renderSeats = (row,count=9) => (
           
 
         </div>
+
+        </div>
+
+            <button onClick={() => navigate("/my-bookings")} className='flex items-center gap-2 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium
+            cursor-pointer active:scale-95'>Proceed to checkout
+              <ArrowRightIcon strokeWidth={2} className='w-4 h-4'/>
+
+            </button>
+
 
 
 
